@@ -22,7 +22,7 @@
     },
     "autoload": {
         "psr-4": {
-            "mauriziocingolani\\yii2fmwkphp\\": "/"
+            "mauriziocingolani\\yii2componentszoom\\": "/"
         }
     },
     "repositories": [
