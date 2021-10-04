@@ -1,6 +1,6 @@
 <?php
 
-namespace backend\components;
+namespace mauriziocingolani\yii2componentszoom;
 
 use yii\base\Component;
 
