@@ -1,6 +1,6 @@
 <?php
 
-namespace mauriziocingolani\yii2componentszoom;
+namespace backend\components;
 
 use yii\base\Component;
 
@@ -8,7 +8,7 @@ use yii\base\Component;
  * Componente per la gestione delle funzionalità Zoom.
  * @author Maurizio Cingolani <mauriziocingolani74@gmail.com>
  * @license http://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
- * @version 1.0.1
+ * @version 1.0.2
  */
 class Zoom extends Component {
 
@@ -27,7 +27,7 @@ class Zoom extends Component {
             throw new \yii\base\InvalidConfigException(__CLASS__ . ': either the $token attribute or the $apikey and $secret attributes must be set.');
     }
 
-    public function getUsers() {
+    public function getUsers($asArray = false) {
         $curl = curl_init();
         $params = [
             'status' => 'active',
@@ -52,7 +52,16 @@ class Zoom extends Component {
         curl_close($curl);
         if ($err)
             return $err;
-        return json_decode($response);
+        $data = json_decode($response);
+        if ($asArray === true) :
+            $users = [];
+            foreach ($data->users as $user) :
+                $users[$user->id] = $user->email;
+            endforeach;
+            asort($users);
+            return $users;
+        endif;
+        return $data;
     }
 
     public function getRecordings($userid) {
