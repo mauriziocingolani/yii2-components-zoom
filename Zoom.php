@@ -8,7 +8,7 @@ use yii\base\Component;
  * Componente per la gestione delle funzionalità Zoom.
  * @author Maurizio Cingolani <mauriziocingolani74@gmail.com>
  * @license http://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
- * @version 1.0.3
+ * @version 1.0.4
  */
 class Zoom extends Component {
 
@@ -99,7 +99,7 @@ class Zoom extends Component {
             'timezone' => 'Europe/Rome',
             'default_password' => true,
                 ], $params);
-        $params2['settings'] = array_merge($params['settings'], [
+        $params2['settings'] = array_merge($params['settings'] ?? [], [
             'host_video' => true,
             'participant_video' => true,
             'audio' => 'voip',
