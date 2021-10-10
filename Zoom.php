@@ -8,7 +8,7 @@ use yii\base\Component;
  * Componente per la gestione delle funzionalità Zoom.
  * @author Maurizio Cingolani <mauriziocingolani74@gmail.com>
  * @license http://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
- * @version 1.0.2
+ * @version 1.0.3
  */
 class Zoom extends Component {
 
@@ -94,16 +94,16 @@ class Zoom extends Component {
 
     public function createMeeting($userid, $params) {
         $curl = curl_init();
-        $params = array_merge([
+        $params2 = array_merge([
             'type' => 2,
             'timezone' => 'Europe/Rome',
             'default_password' => true,
-            'settings' => [
-                'host_video' => true,
-                'participant_video' => true,
-                'audio' => 'voip',
-            ],
                 ], $params);
+        $params2['settings'] = array_merge($params['settings'], [
+            'host_video' => true,
+            'participant_video' => true,
+            'audio' => 'voip',
+        ]);
         curl_setopt_array($curl, array(
             CURLOPT_URL => self::URL . "/users/$userid/meetings",
             CURLOPT_RETURNTRANSFER => true,
@@ -112,7 +112,7 @@ class Zoom extends Component {
             CURLOPT_TIMEOUT => 30,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => json_encode($params),
+            CURLOPT_POSTFIELDS => json_encode($params2),
             CURLOPT_HTTPHEADER => array(
                 "authorization: Bearer " . ($this->_getJWT() ?? $this->token),
                 "content-type: application/json"
