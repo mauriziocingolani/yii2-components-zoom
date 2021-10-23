@@ -8,7 +8,7 @@ use yii\base\Component;
  * Componente per la gestione delle funzionalità Zoom.
  * @author Maurizio Cingolani <mauriziocingolani74@gmail.com>
  * @license http://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
- * @version 1.0.4
+ * @version 1.0.5
  */
 class Zoom extends Component {
 
@@ -27,6 +27,9 @@ class Zoom extends Component {
             throw new \yii\base\InvalidConfigException(__CLASS__ . ': either the $token attribute or the $apikey and $secret attributes must be set.');
     }
 
+    /**
+     * @see https://marketplace.zoom.us/docs/api-reference/zoom-api/users/users
+     */
     public function getUsers($asArray = false) {
         $curl = curl_init();
         $params = [
@@ -64,6 +67,9 @@ class Zoom extends Component {
         return $data;
     }
 
+    /**
+     * @see https://marketplace.zoom.us/docs/api-reference/zoom-api/cloud-recording/recordingslist
+     */
     public function getRecordings($userid) {
         $curl = curl_init();
         $params = [
@@ -92,6 +98,9 @@ class Zoom extends Component {
         return json_decode($response);
     }
 
+    /**
+     * @see https://marketplace.zoom.us/docs/api-reference/zoom-api/meetings/meetingcreate
+     */
     public function createMeeting($userid, $params) {
         $curl = curl_init();
         $params2 = array_merge([
@@ -113,6 +122,32 @@ class Zoom extends Component {
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_POST => true,
             CURLOPT_POSTFIELDS => json_encode($params2),
+            CURLOPT_HTTPHEADER => array(
+                "authorization: Bearer " . ($this->_getJWT() ?? $this->token),
+                "content-type: application/json"
+            ),
+        ));
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        curl_close($curl);
+        if ($err)
+            return $err;
+        return json_decode($response);
+    }
+
+    /**
+     * @see https://marketplace.zoom.us/docs/api-reference/zoom-api/meetings/meeting
+     */
+    public function getMeeting($meetingid) {
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => self::URL . "/meetings/$meetingid",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "GET",
             CURLOPT_HTTPHEADER => array(
                 "authorization: Bearer " . ($this->_getJWT() ?? $this->token),
                 "content-type: application/json"
