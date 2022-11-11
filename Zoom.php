@@ -8,7 +8,7 @@ use yii\base\Component;
  * Componente per la gestione delle funzionalità Zoom.
  * @author Maurizio Cingolani <mauriziocingolani74@gmail.com>
  * @license http://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
- * @version 1.0.5
+ * @version 1.0.6
  */
 class Zoom extends Component {
 
@@ -122,6 +122,32 @@ class Zoom extends Component {
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_POST => true,
             CURLOPT_POSTFIELDS => json_encode($params2),
+            CURLOPT_HTTPHEADER => array(
+                "authorization: Bearer " . ($this->_getJWT() ?? $this->token),
+                "content-type: application/json"
+            ),
+        ));
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        curl_close($curl);
+        if ($err)
+            return $err;
+        return json_decode($response);
+    }
+
+    /**
+     * @see https://marketplace.zoom.us/docs/api-reference/zoom-api/methods/#operation/meetings
+     */
+    public function getMeetings($userid) {
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => self::URL . "/users/$userid/meetings",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "GET",
             CURLOPT_HTTPHEADER => array(
                 "authorization: Bearer " . ($this->_getJWT() ?? $this->token),
                 "content-type: application/json"
